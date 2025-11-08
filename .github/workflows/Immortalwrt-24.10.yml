@@ -188,6 +188,7 @@ jobs:
 
               更新日志：
               2025-0928：本固件所含插件，请看主页图片。
+              2025-1108：常规更新。
 
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@main
