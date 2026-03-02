@@ -37,29 +37,6 @@ sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view
 
 
 
-
-
-# 3月2日尝试解决shadowsocks-libev编译失败的问题
-# 修复 shadowsocks-libev：禁用文档、禁用静态、关闭测试等
-ss_makefile="package/feeds/small/shadowsocks-libev/Makefile"
-
-# 删除已有 CMAKE_OPTIONS（避免重复）
-sed -i '/CMAKE_OPTIONS/d' "$ss_makefile"
-
-# 追加新的 CMAKE_OPTIONS
-cat >> "$ss_makefile" << 'EOF'
-CMAKE_OPTIONS += \
-  -DWITH_STATIC=OFF \
-  -DWITH_EMBEDDED_SRC=ON \
-  -DWITH_DOC_HTML=OFF \
-  -DWITH_DOC_MAN=OFF \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_TESTING=OFF \
-  -DENABLE_CONNMARKTOS=OFF \
-  -DENABLE_NFTABLES=OFF
-EOF
-
-
-
-
-
+# 移除 openwrt feeds 自带的核心包
+rm -rf feeds/packages/net/{xray-core,v2ray-core,v2ray-geodata,sing-box}
+git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
