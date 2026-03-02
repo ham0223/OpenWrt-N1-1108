@@ -39,13 +39,25 @@ sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view
 
 
 
-# 3月1日尝试解决shadowsocks-libev编译失败的问题
-# 强制禁用 shadowsocks-libev 的 patchelf，避免静态 ELF 报错
-makefile="package/feeds/small/shadowsocks-libev/Makefile"
-# 删除已有的 PKG_BUILD_FLAGS（避免重复或冲突）
-sed -i '/PKG_BUILD_FLAGS/d' "$makefile"
-# 追加 no-patchelf（确保最终生效）
-echo 'PKG_BUILD_FLAGS:=no-patchelf' >> "$makefile"
+# 3月2日尝试解决shadowsocks-libev编译失败的问题
+# 修复 shadowsocks-libev：禁用文档、禁用静态、关闭测试等
+ss_makefile="package/feeds/small/shadowsocks-libev/Makefile"
+
+# 删除已有 CMAKE_OPTIONS（避免重复）
+sed -i '/CMAKE_OPTIONS/d' "$ss_makefile"
+
+# 追加新的 CMAKE_OPTIONS
+cat >> "$ss_makefile" << 'EOF'
+CMAKE_OPTIONS += \
+  -DWITH_STATIC=OFF \
+  -DWITH_EMBEDDED_SRC=ON \
+  -DWITH_DOC_HTML=OFF \
+  -DWITH_DOC_MAN=OFF \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_TESTING=OFF \
+  -DENABLE_CONNMARKTOS=OFF \
+  -DENABLE_NFTABLES=OFF
+EOF
 
 
 
