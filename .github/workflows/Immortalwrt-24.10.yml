@@ -67,7 +67,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq install -y $(curl -fsSL https://raw.githubusercontent.com/woni928/OpenWrt-N1/refs/heads/main/N1/Immortalwrt/2410)
+        sudo -E apt-get -qq install -y $(curl -fsSL https://raw.githubusercontent.com/ham0223/OpenWrt-N1-1108/refs/heads/main/N1/Immortalwrt/2410)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -188,7 +188,7 @@ jobs:
 
               更新日志：
               2025-0928：本固件所含插件，请看主页图片。
-              2026-0228：同步上游的更新。
+              2026-0302：同步上游的更新。
 
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@main
