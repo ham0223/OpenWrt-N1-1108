@@ -35,9 +35,19 @@ git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 sed -i 's/<%:Up%>/<%:Move up%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
 sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
 
+
+
+
+
 # 3月1日尝试解决shadowsocks-libev编译失败的问题
-# Fix shadowsocks-libev patchelf error
-sed -i '/PKG_USE_MIPS16/a\PKG_BUILD_FLAGS:=no-patchelf' package/feeds/small/shadowsocks-libev/Makefile
+# 强制禁用 shadowsocks-libev 的 patchelf，避免静态 ELF 报错
+makefile="package/feeds/small/shadowsocks-libev/Makefile"
+# 删除已有的 PKG_BUILD_FLAGS（避免重复或冲突）
+sed -i '/PKG_BUILD_FLAGS/d' "$makefile"
+# 追加 no-patchelf（确保最终生效）
+echo 'PKG_BUILD_FLAGS:=no-patchelf' >> "$makefile"
+
+
 
 
 
