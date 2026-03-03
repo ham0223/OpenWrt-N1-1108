@@ -74,18 +74,19 @@ jobs:
         echo "硬盘详情："
         df -Th
 
-
     - name: 克隆源码
       working-directory: /workdir
       run: |
-        df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        cd openwrt
-        useVersionInfo=$(git show -s --date=short --format="date: %cd<br/>commit: %s<br/>commit hash: %H")
-        echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
-        echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "tag_name=$(date +%Y%m%d)" >> $GITHUB_ENV
+       git config --global url."https://${{ secrets.MY_TOKEN }}@github.com/".insteadOf "https://github.com/"
+       df -hT $PWD
+       git clone $REPO_URL -b $REPO_BRANCH openwrt
+       ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+       cd openwrt
+       useVersionInfo=$(git show -s --date=short --format="date: %cd<br/>commit: %s<br/>commit hash: %H")
+       echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
+       echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+       echo "tag_name=$(date +%Y%m%d)" >> $GITHUB_ENV
+
 
     - name: 加载DIY_P1
       run: |
@@ -188,7 +189,7 @@ jobs:
 
               更新日志：
               2025-0928：本固件所含插件，请看主页图片。
-              2026-0302：同步上游的更新。
+              2026-0303：同步上游的更新。
 
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@main
