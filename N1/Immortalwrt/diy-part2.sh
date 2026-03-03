@@ -39,3 +39,14 @@ sed -i 's/<%:Up%>/<%:Move up%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi
 sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
 
 
+
+
+# 解决 rust 编译时下载 llvm 404 错误的问题
+echo "Fix: Setting download-ci-llvm = false for rust bootstrap..."
+# 创建或修改bootstrap.toml配置文件
+mkdir -p $GITHUB_WORKSPACE/openwrt/build_dir/target-*/host/rustc-*/src
+cat > $GITHUB_WORKSPACE/openwrt/build_dir/target-*/host/rustc-*/src/bootstrap/config.toml << EOF
+[llvm]
+download-ci-llvm = false
+EOF
+echo "Fix applied."
