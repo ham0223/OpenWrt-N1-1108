@@ -41,12 +41,8 @@ sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view
 
 
 
-# 解决 rust 编译时下载 llvm 404 错误的问题
-echo "Fix: Setting download-ci-llvm = false for rust bootstrap..."
-# 创建或修改bootstrap.toml配置文件
-mkdir -p $GITHUB_WORKSPACE/openwrt/build_dir/target-*/host/rustc-*/src
-cat > $GITHUB_WORKSPACE/openwrt/build_dir/target-*/host/rustc-*/src/bootstrap/config.toml << EOF
-[llvm]
-download-ci-llvm = false
-EOF
-echo "Fix applied."
+# 覆盖 rust 为 immortalwrt 官方最新版
+rm -rf feeds/packages/lang/rust
+git clone https://github.com/immortalwrt/packages --depth=1 -b openwrt-24.10 /tmp/iwrt-pkg
+cp -r /tmp/iwrt-pkg/lang/rust feeds/packages/lang/rust
+rm -rf /tmp/iwrt-pkg
