@@ -37,12 +37,3 @@ git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 # 修正俩处错误的翻译
 sed -i 's/<%:Up%>/<%:Move up%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
 sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
-
-
-
-
-# 覆盖 rust 为 immortalwrt 官方最新版
-rm -rf feeds/packages/lang/rust
-git clone https://github.com/immortalwrt/packages --depth=1 -b openwrt-24.10 /tmp/iwrt-pkg
-cp -r /tmp/iwrt-pkg/lang/rust feeds/packages/lang/rust
-rm -rf /tmp/iwrt-pkg
