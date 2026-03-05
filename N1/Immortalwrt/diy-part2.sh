@@ -65,7 +65,22 @@ sed -i 's/<%:Up%>/<%:Move up%>/g'   feeds/luci/modules/luci-compat/luasrc/view/c
 sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
 
 
+#-------------------------------------------------
+# 6. 修复 shadowsocks-libev asciidoc 构建问题
+# 原因：OpenWrt staging_dir 的 python3 没有 asciidoc 模块
+# 方案：直接删除所有 feed 里 shadowsocks-libev 的文档子目录构建指令
+find feeds/ -path "*/shadowsocks-libev*" -name "CMakeLists.txt" | while read f; do
+    sed -i '/add_subdirectory(doc)/d' "$f"
+    sed -i '/find_package.*[Aa]sciidoc/d' "$f"
+    echo "[patched] $f"
+done
 
+# 同时处理 package/ 目录下可能克隆的版本
+find package/ -path "*/shadowsocks-libev*" -name "CMakeLists.txt" | while read f; do
+    sed -i '/add_subdirectory(doc)/d' "$f"
+    sed -i '/find_package.*[Aa]sciidoc/d' "$f"
+    echo "[patched] $f"
+done
 
 
 # 修复 rust CI LLVM 404 问题
@@ -75,4 +90,5 @@ sed -i \
     -e 's/--set=rust.download-rustc=true/--set=rust.download-rustc=false/g' \
     -e 's/--set=rust.download-rustc="if-unchanged"/--set=rust.download-rustc=false/g' \
     feeds/packages/lang/rust/Makefile || true
+#-------------------------------------------------
 
