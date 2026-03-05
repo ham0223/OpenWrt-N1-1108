@@ -1,4 +1,4 @@
-name: Immortalwrt-24.10-AI
+name: Immortalwrt-24.10
 
 on:
   repository_dispatch:
