@@ -1,41 +1,54 @@
 #!/bin/bash
+set -e  # 遇到错误立即退出
 
-# 修改IP
+# ========== 辅助函数 ==========
+log() { echo -e "\e[32m[+]\e[0m $1"; }
+die() { echo -e "\e[31m[✗]\e[0m $1" >&2; exit 1; }
+
+# 批量 git clone（统一使用 --depth=1 浅克隆，加速下载）
+clone() { git clone --depth=1 "$1" "$2" || die "克隆失败: $1"; }
+
+# ========== 1. 基础配置 ==========
+log "修改默认 IP 和主机名..."
 sed -i 's/192.168.1.1/192.168.123.2/g' package/base-files/files/bin/config_generate
-# 修改主机名
-sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/OpenWrt/g'       package/base-files/files/bin/config_generate
 
+# ========== 2. 更新 Golang ==========
+log "更新 Golang 到 25.x..."
+rm -rf feeds/packages/lang/golang
+clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
+
+# ========== 3. Passwall 科学上网 ==========
+log "替换 Passwall 依赖包..."
+# 移除 feeds 自带的旧版核心库，避免冲突
+rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,\
+hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-libev,shadowsocks-rust,\
+shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,\
+xray-plugin,geoview,shadow-tls}
+clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/passwall-packages
+
+log "替换 luci-app-passwall..."
+rm -rf feeds/luci/applications/luci-app-passwall
+clone https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
 
 # 备用科学插件：移除 openwrt feeds 自带的核心包
 #rm -rf feeds/packages/net/{xray-core,v2ray-core,v2ray-geodata,sing-box}
 #git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
-# 更新 golang 1.25 版本
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
+# ========== 4. 其他插件 ==========
+log "拉取第三方插件..."
+clone https://github.com/ophub/luci-app-amlogic  package/amlogic
+clone https://github.com/gdy666/luci-app-lucky    package/lucky
+clone https://github.com/sbwml/luci-app-openlist2 package/openlist
 
-
-# 官方方法：移除 openwrt feeds 自带的核心库
-rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls}
-git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/passwall-packages
-
-
-
-# 移除 openwrt feeds 过时的luci版本
-rm -rf feeds/luci/applications/luci-app-passwall
-git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
-
-
-
-# 删除及其拉取源码
-git clone https://github.com/ophub/luci-app-amlogic --depth=1 package/amlogic
-git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
+log "替换 mosdns (v5)..."
 rm -rf feeds/luci/applications/luci-app-mosdns
-git clone https://github.com/sbwml/luci-app-openlist2 package/openlist
-git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
+git clone --depth=1 -b v5 https://github.com/sbwml/luci-app-mosdns package/mosdns
 
+# ========== 5. 修正翻译错误 ==========
+log "修正 luci-compat 翻译..."
+_TBL=feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
+sed -i 's/<%:Up%>/<%:Move up%>/g'     "$_TBL"
+sed -i 's/<%:Down%>/<%:Move down%>/g' "$_TBL"
 
-
-# 修正俩处错误的翻译
-sed -i 's/<%:Up%>/<%:Move up%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
-sed -i 's/<%:Down%>/<%:Move down%>/g' feeds/luci/modules/luci-compat/luasrc/view/cbi/tblsection.htm
+log "✅ diy-part2.sh 全部执行完毕！"
