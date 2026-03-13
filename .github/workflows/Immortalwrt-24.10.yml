@@ -16,7 +16,7 @@ env:
   DIY_P2_SH: N1/Immortalwrt/diy-part2.sh
   FILES: N1/Immortalwrt/files
   TZ: Asia/Shanghai
-  GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 修复 Node.js 20 废弃警告
 
 jobs:
   build:
@@ -176,7 +176,7 @@ jobs:
         tag: N1-24.10_${{ env.tag_name }}
         artifacts: /workdir/upload/openwrt*
         allowUpdates: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.MY_TOKEN }}  # 修复：使用 MY_TOKEN 而非 GITHUB_TOKEN
         body: |
               ---  使用说明 ---
               
@@ -196,12 +196,12 @@ jobs:
       with:
         retain_days: 3
         keep_minimum_runs: 5
-        token: ${{ env.GITHUB_TOKEN }}		
+        token: ${{ secrets.MY_TOKEN }}  # 修复：直接使用 secrets 而非 env
 
     - name: 删除自动发布的旧固件
       uses: dev-drprasad/delete-older-releases@master
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 7
-        delete_tags : true
-        
+        delete_tags: true
+        token: ${{ secrets.MY_TOKEN }}  # 修复：补充缺失的 token
