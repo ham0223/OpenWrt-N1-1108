@@ -29,7 +29,7 @@ jobs:
       uses: easimon/maximize-build-space@master
       with:
         root-reserve-mb: 2048
-        swap-size-mb: 1024
+        swap-size-mb: 4096
         build-mount-path: /workdir
         overprovision-lvm: 'true'
         remove-dotnet: 'true'
@@ -174,4 +174,10 @@ jobs:
       with:
         keep_latest: 7
         delete_tags: true
-        token: ${{ secrets.MY_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+        
+        
+
+          
+    
