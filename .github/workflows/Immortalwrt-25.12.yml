@@ -188,7 +188,7 @@ jobs:
               密码：password
 
               更新日志：
-              2026-0313：本固件所含插件，请看主页图片-25.12
+              2026-0314：本固件所含插件，请看主页图片-25.12
 
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@main
